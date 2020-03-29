@@ -1,0 +1,51 @@
+name: Django CI+CD
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  AZURE_WEBAPP_NAME: covid-long-line-api
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r src/requirements.txt
+    - name: Run Tests
+      run: |
+        python manage.py test
+        
+    - name: Login via Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Docker Build & Push to Docker Hub
+      run: |
+        docker build . -t patelr3/kaggle-covid19-line-list-api:${{ github.sha }}
+        docker push patelr3/kaggle-covid19-line-list-api:${{ github.sha }} 
+      
+    - name: 'Deploy to Azure Web App for Container'   
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} 
+        images: patelr3/kaggle-covid19-line-list-api:${{ github.sha }} 
+    
+    - name: Azure logout
+      run: |
+        az logout
