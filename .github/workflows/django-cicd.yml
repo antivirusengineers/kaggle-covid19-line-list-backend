@@ -37,7 +37,7 @@ jobs:
 
     - name: Docker Build & Push to Docker Hub
       run: |
-        docker build . -t patelr3/kaggle-covid19-line-list-api:${{ github.sha }}
+        docker build ./src -t patelr3/kaggle-covid19-line-list-api:${{ github.sha }}
         docker push patelr3/kaggle-covid19-line-list-api:${{ github.sha }} 
       
     - name: 'Deploy to Azure Web App for Container'   
