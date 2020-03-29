@@ -14,7 +14,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.8]
 
     steps:
     - uses: actions/checkout@v2
@@ -35,10 +35,13 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Docker Build & Push to Docker Hub
-      run: |
-        docker build ./src -t patelr3/kaggle-covid19-line-list-api:${{ github.sha }}
-        docker push patelr3/kaggle-covid19-line-list-api:${{ github.sha }} 
+    - name: Publish to Docker Hub
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: patelr3/kaggle-covid19-line-list-api
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        workdir: src
       
     - name: 'Deploy to Azure Web App for Container'   
       uses: azure/webapps-deploy@v2
