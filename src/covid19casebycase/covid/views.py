@@ -5,6 +5,9 @@ import sys
 
 # Create your views here.
 
+def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
+    return 0.10
+
 def getSymptomPercentageCountry(request):
     body = json.loads(request.body)
     resp_dict = {}
@@ -22,8 +25,8 @@ def getSymptomPercentageCountry(request):
     resp_body = json.dumps(resp_dict)
     return HttpResponse(resp_body)
 
-def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
-    return 0.10
+def _getSymptomPercentageState(state_name, attribute_name, attribute_value):
+    return 0.20
 
 def getSymptomPercentageState(request):
     body = json.loads(request.body)
@@ -36,11 +39,14 @@ def getSymptomPercentageState(request):
     resp_dict["attributePercentages"] = {}
 
     for field in attributes:
-        percentage = _getSymptomPercentageCountry(location, field, attributes[field])
+        percentage = _getSymptomPercentageState(location, field, attributes[field])
         resp_dict["attributePercentages"][field] = percentage
 
     resp_body = json.dumps(resp_dict)
     return HttpResponse(resp_body)
+
+def _getSymptomPercentageCounty(county_name, attribute_name, attribute_value):
+    return 0.30
 
 def getSymptomPercentageCounty(request):
     body = json.loads(request.body)
@@ -53,7 +59,7 @@ def getSymptomPercentageCounty(request):
     resp_dict["attributePercentages"] = {}
 
     for field in attributes:
-        percentage = _getSymptomPercentageCountry(location, field, attributes[field])
+        percentage = _getSymptomPercentageCounty(location, field, attributes[field])
         resp_dict["attributePercentages"][field] = percentage
 
     resp_body = json.dumps(resp_dict)
