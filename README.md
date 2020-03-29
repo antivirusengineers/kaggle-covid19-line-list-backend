@@ -32,7 +32,7 @@ The current endpoint for these APIs is: https://covid-long-line-api.azurewebsite
 **Example Request Body**
 ```json
 {
-	"location": "USA",
+	"location": "Washington",
 	"attributes": {
 		"age": 10,
 		"gender": "male"
@@ -43,7 +43,7 @@ The current endpoint for these APIs is: https://covid-long-line-api.azurewebsite
 **Example Response**
 ```json
 {
-    "state": "USA",
+    "state": "Washington",
     "attributePercentages": {
         "age": 0.2,
         "gender": 0.2
@@ -55,7 +55,7 @@ The current endpoint for these APIs is: https://covid-long-line-api.azurewebsite
 **Example Request Body**
 ```json
 {
-	"location": "USA",
+	"location": "King",
 	"attributes": {
 		"age": 10,
 		"gender": "male"
@@ -66,10 +66,10 @@ The current endpoint for these APIs is: https://covid-long-line-api.azurewebsite
 **Example Response**
 ```json
 {
-    "state": "USA",
+    "county": "King",
     "attributePercentages": {
-        "age": 0.2,
-        "gender": 0.2
+        "age": 0.3,
+        "gender": 0.3
     }
 }
 ```
