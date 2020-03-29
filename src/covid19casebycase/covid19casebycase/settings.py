@@ -26,7 +26,8 @@ SECRET_KEY = 'g*we!**ilkzr#w^s-a&!cd!ay51pna_u)1%^iuk55(l5+=iy2n'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'covid-long-line-api.azurewebsites.net'
+    'covid-long-line-api.azurewebsites.net',
+    'localhost',
 ]
 
 
