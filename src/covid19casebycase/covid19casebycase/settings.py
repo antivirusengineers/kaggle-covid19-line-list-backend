@@ -25,7 +25,9 @@ SECRET_KEY = 'g*we!**ilkzr#w^s-a&!cd!ay51pna_u)1%^iuk55(l5+=iy2n'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'covid-long-line-api.azurewebsites.net'
+]
 
 
 # Application definition
