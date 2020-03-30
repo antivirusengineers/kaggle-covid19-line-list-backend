@@ -10,5 +10,6 @@ urlpatterns = [
     path('getCountries', views.getCountries, name='getCountries'),
     path('getStates', views.getStates, name='GetStates'),
     path('getCounties', views.getCounties, name='GetCounties'),
+    path('getGenders', views.getGenders, name="GetGenders"),
     path('updateDB', views.updateDB, name='UpdateDB') #this is for testing. should not be removed from prod.
 ]
