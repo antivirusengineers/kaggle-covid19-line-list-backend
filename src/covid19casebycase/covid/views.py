@@ -6,18 +6,39 @@ from .models import Case,Symptom
 
 # Create your views here.
 
+def _getCasesForCountryAndAttribute(country_name, attribute_name, attribute_value,case_list=None):
+    if not(case_list): 
+        case_list = Case.objects.all() 
+    if(attribute_name=="symptom"): 
+        symptom_list = Symptom.objects.filter(name=attribute_value).values("case").distinct()
+        cases = case_list.filter(pk__in=list(symptom_list.values_list("case__pk", flat=True)))
+    elif(attribute_name=="age"): 
+        cases = case_list.filter(age=int(attribute_value))
+    elif(attribute_name=="gender"): 
+        case = case_list.objects.filter(gender=attribute_value)
+    
+    return cases.filter(country=country_name)
+
+
 def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
-    return 0.10
+    cases = _getCasesForCountryAndAttribute(country_name,attribute_name,attribute_value)
+    total_cases = getTotalCaseCount(country_name)
+    return cases.count()/total_cases
 
-
+def getTotalCaseCount(country_name=None): 
+    if country_name: 
+        return Case.objects.filter(country=country_name).count() 
+    else: 
+        return Case.objects.all().count()
 
 def getSymptomPercentageCountry(request):
-    body = json.loads(request.body)
+
     resp_dict = {}
 
-    location = body["location"]
-    attributes = body["attributes"]
-
+    location = request.GET.get("location")
+    attributes = json.loads(request.GET.get("attributes"))
+    print(location)
+    print(attributes)
     resp_dict["country"] = location
     resp_dict["attributePercentages"] = {}
 
@@ -32,7 +53,6 @@ def _getSymptomPercentageState(state_name, attribute_name, attribute_value):
     return 0.20
 
 def getSymptomPercentageState(request):
-    body = json.loads(request.body)
     resp_dict = {}
 
     location = body["location"]
@@ -52,11 +72,12 @@ def _getSymptomPercentageCounty(county_name, attribute_name, attribute_value):
     return 0.30
 
 def getSymptomPercentageCounty(request):
-    body = json.loads(request.body)
+ 
     resp_dict = {}
 
-    location = body["location"]
-    attributes = body["attributes"]
+    location = request.GET.get("location")
+   
+    attributes = request.GET.get("attributes")
 
     resp_dict["county"] = location
     resp_dict["attributePercentages"] = {}
@@ -88,7 +109,16 @@ def getCountries(request):
     resp_body = json.dumps(resp_dict)
     return HttpResponse(resp_body)
 
+def getGenders(request): 
+    resp_dict = {}
 
+    resp_dict["genders"] = _getGenders()
+
+    resp_body = json.dumps(resp_dict)
+    return HttpResponse(resp_body)
+
+def _getGenders(): 
+    return [x for (x,y) in Case.GENDERS_AVAILABLE] 
 
 def _getCountries():
     return  list(Case.objects.order_by("country").values_list('country', flat=True).distinct())
