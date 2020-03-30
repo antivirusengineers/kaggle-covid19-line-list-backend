@@ -2,11 +2,14 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import json
 import sys
+from .models import Case,Symptom
 
 # Create your views here.
 
 def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
     return 0.10
+
+
 
 def getSymptomPercentageCountry(request):
     body = json.loads(request.body)
@@ -74,10 +77,8 @@ def getSymptoms(request):
     return HttpResponse(resp_body)
 
 def _getSymptoms():
-    symptoms =  []
-    symptoms.append("da flu")
-    symptoms.append("da corona")
-    return symptoms
+    return list(Symptom.objects.order_by("name").values_list("name", flat=True).distinct()) 
+
 
 def getCountries(request):
     resp_dict = {}
@@ -87,11 +88,10 @@ def getCountries(request):
     resp_body = json.dumps(resp_dict)
     return HttpResponse(resp_body)
 
+
+
 def _getCountries():
-    countries = []
-    countries.append("da usa")
-    countries.append("ooo canada")
-    return countries
+    return  list(Case.objects.order_by("country").values_list('country', flat=True).distinct())
 
 def getStates(request):
     resp_dict = {}
@@ -123,3 +123,8 @@ def _getCounties():
     counties.append("pallet town")
 
     return counties
+
+def updateDB(request): 
+    from .parser import parseKaggleCSV
+
+    parseKaggleCSV()
