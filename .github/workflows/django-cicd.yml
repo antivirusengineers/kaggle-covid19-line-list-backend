@@ -26,6 +26,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r src/requirements.txt
+    - name: Migrate Database Changes 
+      run: | 
+        python src/covid19casebycase/manage.py makemigrations
+        python src/covid19casebycase/manage.py migrate
     - name: Run Tests
       run: |
         python src/covid19casebycase/manage.py test
