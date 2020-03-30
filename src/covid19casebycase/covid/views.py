@@ -17,7 +17,10 @@ def _getCasesForCountryAndAttribute(country_name, attribute_name, attribute_valu
     elif(attribute_name=="gender"): 
         cases = case_list.filter(gender=attribute_value)
     
-    return cases.filter(country=country_name)
+    if country_name: 
+        return cases.filter(country=country_name)
+    else: 
+        return cases 
 
 
 def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
