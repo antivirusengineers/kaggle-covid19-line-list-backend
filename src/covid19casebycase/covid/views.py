@@ -23,6 +23,7 @@ def _getCasesForCountryAndAttribute(country_name, attribute_name, attribute_valu
         return cases 
 
 
+
 def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
     cases = _getCasesForCountryAndAttribute(country_name,attribute_name,attribute_value)
     total_cases = getTotalCaseCount(country_name)
