@@ -15,7 +15,7 @@ def _getCasesForCountryAndAttribute(country_name, attribute_name, attribute_valu
     elif(attribute_name=="age"): 
         cases = case_list.filter(age=int(attribute_value))
     elif(attribute_name=="gender"): 
-        case = case_list.objects.filter(gender=attribute_value)
+        cases = case_list.filter(gender=attribute_value)
     
     return cases.filter(country=country_name)
 
