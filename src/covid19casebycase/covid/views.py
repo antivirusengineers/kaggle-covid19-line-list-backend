@@ -158,6 +158,5 @@ def _getCounties():
     return counties
 
 def updateDB(request): 
-    from .parser import parseKaggleCSV
-
-    parseKaggleCSV()
+    from .tasks import refreshKaggleDataset 
+    refreshKaggleDataset() 
