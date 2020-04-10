@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 DATASET_DIR = os.path.join(BASE_DIR, 'datasets') 
 #Ideally we put this in the static files. but good enough for now (@siaharon)
 KAGGLE_DATASET_PATH = "sudalairajkumar/novel-corona-virus-2019-dataset"

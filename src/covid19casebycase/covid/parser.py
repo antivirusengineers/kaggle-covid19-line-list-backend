@@ -2,7 +2,6 @@ import csv
 from django.conf import settings
 from .models import Case,Symptom
 
-
 class ParserBaseClass(): 
     #supported key map has the format (dict_key,type, model, field)
     supported_key_map_case = [
@@ -137,14 +136,9 @@ class KaggleCSVParser(CSVParser):
             kagglereader = csv.reader(csvfile)
             csv_headers = next(kagglereader, None)
             self.FillDatabaseFromReader(kagglereader, csv_headers)
-         
-        
+
+
+
+
+
        
-
-
-
-
-           
-        
-            
-

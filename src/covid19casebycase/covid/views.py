@@ -21,9 +21,7 @@ def _getCasesForCountryAndAttribute(country_name, attribute_name, attribute_valu
         return cases.filter(country=country_name)
     else: 
         return cases 
-
-
-
+      
 def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
     cases = _getCasesForCountryAndAttribute(country_name,attribute_name,attribute_value)
     total_cases = getTotalCaseCount(country_name)
@@ -59,21 +57,18 @@ def _getSymptomPercentageState(state_name, attribute_name, attribute_value):
 def getSymptomPercentageState(request):
     resp_dict = {}
 
-    location = body["location"]
-    attributes = body["attributes"]
 
-    resp_dict["state"] = location
-    resp_dict["attributePercentages"] = {}
 
-    for field in attributes:
-        percentage = _getSymptomPercentageState(location, field, attributes[field])
-        resp_dict["attributePercentages"][field] = percentage
+def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
+    cases = _getCasesForCountryAndAttribute(country_name,attribute_name,attribute_value)
+    total_cases = getTotalCaseCount(country_name)
+    return cases.count()/total_cases
 
-    resp_body = json.dumps(resp_dict)
-    return HttpResponse(resp_body)
-
-def _getSymptomPercentageCounty(county_name, attribute_name, attribute_value):
-    return 0.30
+def getTotalCaseCount(country_name=None): 
+    if country_name: 
+        return Case.objects.filter(country=country_name).count() 
+    else: 
+        return Case.objects.all().count()
 
 def getSymptomPercentageCounty(request):
  
@@ -87,7 +82,7 @@ def getSymptomPercentageCounty(request):
     resp_dict["attributePercentages"] = {}
 
     for field in attributes:
-        percentage = _getSymptomPercentageCounty(location, field, attributes[field])
+        percentage = _getSymptomPercentageCountry(location, field, attributes[field])
         resp_dict["attributePercentages"][field] = percentage
 
     resp_body = json.dumps(resp_dict)
@@ -120,43 +115,20 @@ def getGenders(request):
 
     resp_body = json.dumps(resp_dict)
     return HttpResponse(resp_body)
+  
+def getStates(request):
+    resp_dict = {}
+
+    resp_dict["genders"] = _getGenders()
+
+    resp_body = json.dumps(resp_dict)
+    return HttpResponse(resp_body)
 
 def _getGenders(): 
     return [x for (x,y) in Case.GENDERS_AVAILABLE] 
 
 def _getCountries():
     return  list(Case.objects.order_by("country").values_list('country', flat=True).distinct())
-
-def getStates(request):
-    resp_dict = {}
-
-    resp_dict["states"] = _getStates()
-
-    resp_body = json.dumps(resp_dict)
-    return HttpResponse(resp_body)
-
-def _getStates():
-    states = []
-    states.append("wurshingtun")
-    states.append("kanto")
-
-    return states
-
-def getCounties(request):
-    resp_dict = {}
-
-    resp_dict["counties"] = _getCounties()
-
-    resp_body = json.dumps(resp_dict)
-    return HttpResponse(resp_body)
-
-def _getCounties():
-    counties = []
-    counties.append("king")
-    counties.append("queen")
-    counties.append("pallet town")
-
-    return counties
 
 def updateDB(request): 
     from .tasks import refreshKaggleDataset 
