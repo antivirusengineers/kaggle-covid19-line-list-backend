@@ -9,9 +9,7 @@ def importKaggleDataset():
     #first we set the environment variables and authenticate 
     os.environ['KAGGLE_USERNAME'] = settings.KAGGLE_USERNAME
     os.environ['KAGGLE_KEY'] = settings.KAGGLE_API_KEY
-    print("ENVIRONMENT VARIABLES")
-    print(os.environ['KAGGLE_KEY'], os.environ['KAGGLE_USERNAME'])
-
+    
     from kaggle.api.kaggle_api_extended import KaggleApi
     api = KaggleApi()
     api.authenticate()

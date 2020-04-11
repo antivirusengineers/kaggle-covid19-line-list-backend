@@ -61,7 +61,8 @@ class ParserBaseClass():
                 linted_value = case_dict[row["key"]]
                 if(row["type"]==bool): 
                     linted_value = int(case_dict[row["key"]])
-
+                elif(row["type"]==str): 
+                    linted_value = linted_value.strip()
                 value = row["type"](linted_value) 
                 setattr(case, row["field"], value)
             except: 
@@ -72,6 +73,8 @@ class ParserBaseClass():
         for row in self.supported_key_map_case_related: 
             if(row["type"]==list): 
                 for item in case_dict[row["key"]].split(","): 
+                    if (row["list_type"]==str): 
+                        item = item.strip()
                     self.create_related_object_helper(row["model"], row["field"], row["list_type"], item, case)
             else: 
                 self.create_related_object_helper(row["model"], row["field"], row["type"], case_dict["key"], case)
