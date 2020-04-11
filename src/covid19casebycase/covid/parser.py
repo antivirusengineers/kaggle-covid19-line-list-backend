@@ -2,50 +2,6 @@ import csv
 from django.conf import settings
 from .models import Case,Symptom
 
-<<<<<<< HEAD
-def parseKaggleCSV(): 
-    #delete all previous values in the database. 
-    Case.objects.all().delete() 
-    #now read and populate database from CSV. 
-    with open(settings.KAGGLE_CSV_FILE, newline='',errors='ignore') as csvfile:
-        kagglereader = csv.reader(csvfile)
-        headers = next(kagglereader, None)
-        indices = {} 
-        headers_required = ["age","gender", "country","symptom","death","recovered","location"]
-        for name in headers_required: 
-            indices[name]=headers.index(name)
-
-        for row in kagglereader: 
-            #create a new case 
-            case = Case() 
-            try: 
-                case.age = int(row[indices["age"]])
-            except: 
-                pass
-
-            case.gender = row[indices["gender"]]
-            case.country = row[indices["country"]]
-            case.location = row[indices["location"]]
-            try: 
-                case.death = bool(int(row[indices["death"]])) 
-            except: 
-                pass 
-            try: 
-                case.recovered = bool(int(row[indices["recovered"]])) 
-            except: 
-                pass
-            case.save() #this saves the case to the database.
-
-            #now parse the symptomology for the case
-            for symptom_name in row[indices["symptom"]].split(","): 
-                symptom = Symptom(case = case)
-                symptom.name=symptom_name
-                symptom.save()
-
-        
-            
-
-=======
 class ParserBaseClass(): 
     #supported key map has the format (dict_key,type, model, field)
     supported_key_map_case = [
@@ -105,7 +61,8 @@ class ParserBaseClass():
                 linted_value = case_dict[row["key"]]
                 if(row["type"]==bool): 
                     linted_value = int(case_dict[row["key"]])
-
+                elif(row["type"]==str): 
+                    linted_value = linted_value.strip()
                 value = row["type"](linted_value) 
                 setattr(case, row["field"], value)
             except: 
@@ -116,6 +73,8 @@ class ParserBaseClass():
         for row in self.supported_key_map_case_related: 
             if(row["type"]==list): 
                 for item in case_dict[row["key"]].split(","): 
+                    if (row["list_type"]==str): 
+                        item = item.strip()
                     self.create_related_object_helper(row["model"], row["field"], row["list_type"], item, case)
             else: 
                 self.create_related_object_helper(row["model"], row["field"], row["type"], case_dict["key"], case)
@@ -186,4 +145,3 @@ class KaggleCSVParser(CSVParser):
 
 
        
->>>>>>> 9195e7d2bb94af7e2ce1b01b2358a70bb71af2ee
