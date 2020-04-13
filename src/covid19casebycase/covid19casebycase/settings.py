@@ -15,8 +15,13 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+DATASET_DIR = os.path.join(BASE_DIR, 'datasets') 
 #Ideally we put this in the static files. but good enough for now (@siaharon)
-KAGGLE_CSV_FILE = os.path.join(BASE_DIR, 'COVID19_line_list_data.csv') 
+KAGGLE_DATASET_PATH = "sudalairajkumar/novel-corona-virus-2019-dataset"
+KAGGLE_DATASET_FILENAME = "COVID19_line_list_data.csv"
+KAGGLE_LOCAL_FILENAME = os.path.join(DATASET_DIR, KAGGLE_DATASET_FILENAME)
+KAGGLE_USERNAME = "selfcheckadmin"
+KAGGLE_API_KEY = "d5d13c5b32b7a1e6b8a2d5ebc7d92f79"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -44,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'covid',
     'corsheaders',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

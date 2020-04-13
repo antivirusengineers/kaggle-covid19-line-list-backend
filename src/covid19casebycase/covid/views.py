@@ -3,92 +3,108 @@ from django.http import HttpResponse
 import json
 import sys
 from .models import Case,Symptom
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 # Create your views here.
+class ListSymptoms(APIView):
+    def get(self, request, format=None):
+        symptoms = Symptom.objects.get_unique("name")
+        return Response(symptoms)
 
-def _getCasesForCountryAndAttribute(country_name, attribute_name, attribute_value,case_list=None):
-    if not(case_list): 
-        case_list = Case.objects.all() 
-    if(attribute_name=="symptom"): 
-        symptom_list = Symptom.objects.filter(name=attribute_value).values("case").distinct()
-        cases = case_list.filter(pk__in=list(symptom_list.values_list("case__pk", flat=True)))
-    elif(attribute_name=="age"): 
-        cases = case_list.filter(age=int(attribute_value))
-    elif(attribute_name=="gender"): 
-        cases = case_list.filter(gender=attribute_value)
-    
-    if country_name: 
-        return cases.filter(country=country_name)
-    else: 
-        return cases 
+class ListCountries(APIView):
+    def get(self, request, format=None):
+        countries = Case.objects.get_unique("country")
+        return Response(countries)
 
+class ListGenders(APIView):
+    def get(self, request, format=None):
+        genders = [x for (x,y) in Case.GENDERS_AVAILABLE] 
+        return Response(genders)
 
+class Prevalence(APIView): 
+    prevalence_tiers = ["country"]
 
-def _getSymptomPercentageCountry(country_name, attribute_name, attribute_value):
-    cases = _getCasesForCountryAndAttribute(country_name,attribute_name,attribute_value)
-    total_cases = getTotalCaseCount(country_name)
-    return cases.count()/total_cases
+    def get(self, request, format=None): 
+        """ 
+        REQUEST FORMAT: 
+        {"attributes": 
+            {
+                "attr_name": val, 
+                "attr_name_list": [list_of_vals]
+            }, 
+        "additional_args": {
+            "attr_name" (relates to above list): 
+                {
+                    "additional_arg": val 
+                }
+            }
+        "localization": "val"
+        }
 
-def getTotalCaseCount(country_name=None): 
-    if country_name: 
-        return Case.objects.filter(country=country_name).count() 
-    else: 
-        return Case.objects.all().count()
+        SUPPORTED ATTRIBUTES: 
+        "age", "gender", "symptom_list", "country" 
 
-def getSymptomPercentageCountry(request):
+        SUPPORTED ADDITIONAL ARGUMENTS: 
+        "age" --> "span" 
 
-    resp_dict = {}
+        SUPPORTED LOCALIZATION: 
+        "country" 
 
-    location = request.GET.get("location")
-    attributes = json.loads(request.GET.get("attributes"))
-    print(location)
-    print(attributes)
-    resp_dict["country"] = location
-    resp_dict["attributePercentages"] = {}
+        """
+        attributes = request.data.get("attributes") 
 
-    for field in attributes:
-        percentage = _getSymptomPercentageCountry(location, field, attributes[field])
-        resp_dict["attributePercentages"][field] = percentage
+        #if there are no attributes, do not proceed with calculations. Nothing to determine.
+        if not attributes: 
+            return Response(
+                status=400
+            )
+        attributes = json.loads(attributes)
 
-    resp_body = json.dumps(resp_dict)
-    return HttpResponse(resp_body)
-    
-def getSymptoms(request):
-    resp_dict = {}
+        additional_args =request.data.get("additional_args")
 
-    resp_dict["symptoms"] = _getSymptoms()
-    
-    resp_body = json.dumps(resp_dict)
-    return HttpResponse(resp_body)
+        additional_args = json.loads(additional_args) if additional_args else {}
+        #not yet supported - this will allow users to determine the level of localization for 
+        #percentage calculations - i.e. State level, country level etc. 
+        localization = request.data.get("localization") 
+        #for now it will always be localized to country if available.
+        localization = "country"
 
-def _getSymptoms():
-    return list(Symptom.objects.order_by("name").values_list("name", flat=True).distinct()) 
+        cases = self.get_cases(attributes, additional_args)
+        
+        percentage = self.calculate_percentage(cases,attributes.get(localization), localization)
 
+        return Response(
+            { 
+                "percentage": percentage
+            }
+        )
 
-def getCountries(request):
-    resp_dict = {}
+    def calculate_percentage(self, cases, location=None, location_type = "country"): 
+        if location: 
+            return cases.count()/Case.objects.filter(**{location_type: location}).count() 
+        else: 
+            return cases.count()/Case.objects.all().count()
 
-    resp_dict["countries"] = _getCountries()
+    def get_cases(self, attributes, additional_args={}): 
+        cases = Case.objects.all() 
+        
+        for field in attributes: 
+            value = attributes[field]
+            args = additional_args.get(field)
+            if type(value) is list: 
+                filter_field = field[:-5]
+                for single_value in value: 
+                    if type(single_value)==str: 
+                        single_value=single_value.strip()
+                    cases = cases.filter_by_attribute(filter_field, single_value, args if args else {})
+            else: 
+                if type(value)==str: 
+                    value = value.strip()
+                cases = cases.filter_by_attribute(field, value, args if args else {})  
+        
+        return cases
 
-    resp_body = json.dumps(resp_dict)
-    return HttpResponse(resp_body)
-
-def getGenders(request): 
-    resp_dict = {}
-
-    resp_dict["genders"] = _getGenders()
-
-    resp_body = json.dumps(resp_dict)
-    return HttpResponse(resp_body)
-
-def _getGenders(): 
-    return [x for (x,y) in Case.GENDERS_AVAILABLE] 
-
-def _getCountries():
-    return  list(Case.objects.order_by("country").values_list('country', flat=True).distinct())
-
-def updateDB(request): 
-    from .parser import parseKaggleCSV
-
-    parseKaggleCSV()
-    return HttpResponse('Success')
+def updateDB(request):  
+    from .tasks import refreshKaggleDataset 
+    refreshKaggleDataset() 
