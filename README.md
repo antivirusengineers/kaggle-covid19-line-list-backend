@@ -11,9 +11,9 @@ The current endpoint for these APIs is: https://covid-long-line-api.azurewebsite
 {
 	"attributes": {
 		"age": 10,
-		"gender": "male"
+		"gender": "male",
 		"symptom_list": ["cough", "fever"],
-		"country": USA 
+		"country": "USA"
 	}
 	"additional_args": {
 		"age": 
@@ -40,8 +40,7 @@ No request body needed.
     [
         "fever",
         "cough", 
-	"headache",
-	...
+	"headache"
     ]
 ```
 
@@ -52,8 +51,7 @@ No request body needed.
 ```json
     [
         "Canada",
-        "USA",
-	...
+        "USA"
     ]
 
 ```
