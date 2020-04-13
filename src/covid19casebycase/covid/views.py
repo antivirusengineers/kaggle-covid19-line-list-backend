@@ -106,5 +106,5 @@ class Prevalence(APIView):
         return cases
 
 def updateDB(request):  
-    from .tasks import refreshKaggleDataset 
+    from .cron import refreshKaggleDataset 
     refreshKaggleDataset() 
