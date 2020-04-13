@@ -14,13 +14,13 @@ The current endpoint for these APIs is: https://covid-long-line-api.azurewebsite
 		"gender": "male",
 		"symptom_list": ["cough", "fever"],
 		"country": "USA"
-	}
+	},
 	"additional_args": {
 		"age": 
 		{
 			"span": 5
 		}
-	}
+	},
 	"localization": "country"
 }
 ```
@@ -37,11 +37,11 @@ No request body needed.
 
 **Example Response**
 ```json
-    [
-        "fever",
-        "cough", 
-	"headache"
-    ]
+[
+    "fever",
+    "cough", 
+    "headache"
+]
 ```
 
 ### GET `/covid/country-list`
@@ -49,10 +49,10 @@ No request body needed.
 
 **Example Response**
 ```json
-    [
-        "Canada",
-        "USA"
-    ]
+[
+    "Canada",
+    "USA"
+]
 
 ```
 
@@ -61,9 +61,9 @@ No request body needed.
 
 **Example Response**
 ```json
-    [
-        "female",
-        "male"
-    ]
+[
+    "female",
+    "male"
+]
 
 ```
