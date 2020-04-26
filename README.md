@@ -5,124 +5,65 @@ This backend serves several APIs that compare an individual's data and symptoms 
 The current endpoint for these APIs is: https://covid-long-line-api.azurewebsites.net.
 
 ## Routes
-### GET `/covid/getSymptomPercentagesCountry`
+### GET `/covid/prevalence`
 **Example Request Body**
 ```json
 {
-	"location": "USA",
 	"attributes": {
 		"age": 10,
-		"gender": "male"
-	}
+		"gender": "male",
+		"symptom_list": ["cough", "fever"],
+		"country": "USA"
+	},
+	"additional_args": {
+		"age": 
+		{
+			"span": 5
+		}
+	},
+	"localization": "country"
 }
 ```
 
 **Example Response**
 ```json
 {
-    "country": "USA",
-    "attributePercentages": {
-        "age": 0.1,
-        "gender": 0.1
-    }
+    "percentage": 0.075
 }
 ```
 
-### GET `/covid/getSymptomPercentagesState`
-**Example Request Body**
-```json
-{
-	"location": "Washington",
-	"attributes": {
-		"age": 10,
-		"gender": "male"
-	}
-}
-```
-
-**Example Response**
-```json
-{
-    "state": "Washington",
-    "attributePercentages": {
-        "age": 0.2,
-        "gender": 0.2
-    }
-}
-```
-
-### GET `/covid/getSymptomPercentagesCounty`
-**Example Request Body**
-```json
-{
-	"location": "King",
-	"attributes": {
-		"age": 10,
-		"gender": "male"
-	}
-}
-```
-
-**Example Response**
-```json
-{
-    "county": "King",
-    "attributePercentages": {
-        "age": 0.3,
-        "gender": 0.3
-    }
-}
-```
-
-### GET `/covid/getSymptoms`
+### GET `/covid/symptom-list`
 No request body needed.
 
 **Example Response**
 ```json
-{
-    "symptoms": [
-        "da flu",
-        "da corona"
-    ]
-}
+[
+    "fever",
+    "cough", 
+    "headache"
+]
 ```
 
-### GET `/covid/getCountries`
+### GET `/covid/country-list`
 No request body needed.
 
 **Example Response**
 ```json
-{
-    "countries": [
-        "da usa",
-        "ooo canada"
-    ]
-}
+[
+    "Canada",
+    "USA"
+]
+
 ```
 
-### GET `/covid/getStates`
+### GET `/covid/gender-list`
 No request body needed.
 
 **Example Response**
 ```json
-{
-    "states": [
-        "wurshingtun",
-        "kanto"
-    ]
-}
-```
+[
+    "female",
+    "male"
+]
 
-### GET `/covid/getCounties`
-No request body needed.
-
-**Example Response**
-```json
-{
-    "counties": [
-        "king",
-        "queen",
-        "pallet town"
-    ]
-}
 ```
