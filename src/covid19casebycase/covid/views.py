@@ -25,7 +25,7 @@ class ListGenders(APIView):
 class Prevalence(APIView): 
     prevalence_tiers = ["country"]
 
-    def get(self, request, format=None): 
+    def post(self, request, format=None): 
         """ 
         REQUEST FORMAT: 
         {"attributes": 
@@ -106,5 +106,5 @@ class Prevalence(APIView):
         return cases
 
 def updateDB(request):  
-    from .tasks import refreshKaggleDataset 
+    from .cron import refreshKaggleDataset 
     refreshKaggleDataset() 

@@ -8,4 +8,5 @@ COPY . /code/
 EXPOSE 8000
 
 RUN python ./covid19casebycase/manage.py migrate
+RUN python ./covid19casebycase/manage.py crontab add
 CMD ["python", "./covid19casebycase/manage.py", "runserver", "0.0.0.0:8000"]

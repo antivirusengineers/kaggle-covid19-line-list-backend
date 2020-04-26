@@ -30,6 +30,8 @@ jobs:
       run: | 
         python src/covid19casebycase/manage.py makemigrations
         python src/covid19casebycase/manage.py migrate
+    - name: Add Cron Jobs 
+      run: python src/covid19casebycase/manage.py crontab add
     - name: Run Tests
       run: |
         python src/covid19casebycase/manage.py test
