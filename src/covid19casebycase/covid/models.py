@@ -44,10 +44,7 @@ class CaseQuerySet(models.QuerySet):
             field = related_object_map.get("field")
             lint_field, casted_value = self.cast_for_query(model, field, attribute_value)
             object_list = model.objects.filter(**{lint_field: casted_value})
-            print(object_list.count())
-            print(self.count())
-            return self.filter(pk__in=list(object_list.values_list("case__pk", flat=True)))
-        
+            return self.filter(pk__in=list(object_list.values_list("case__pk", flat=True)))     
         return self
     
     def cast_for_query(self, model, field, value): 

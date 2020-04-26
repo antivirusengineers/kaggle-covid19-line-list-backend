@@ -25,7 +25,33 @@ class ListGenders(APIView):
 class Prevalence(APIView): 
     prevalence_tiers = ["country"]
 
-    def get(self, request, format=None): 
+    def post(self, request, format=None): 
+        """ 
+        REQUEST FORMAT: 
+        {"attributes": 
+            {
+                "attr_name": val, 
+                "attr_name_list": [list_of_vals]
+            }, 
+        "additional_args": {
+            "attr_name" (relates to above list): 
+                {
+                    "additional_arg": val 
+                }
+            }
+        "localization": "val"
+        }
+
+        SUPPORTED ATTRIBUTES: 
+        "age", "gender", "symptom_list", "country" 
+
+        SUPPORTED ADDITIONAL ARGUMENTS: 
+        "age" --> "span" 
+
+        SUPPORTED LOCALIZATION: 
+        "country" 
+
+        """
         attributes = request.data.get("attributes") 
 
         #if there are no attributes, do not proceed with calculations. Nothing to determine.
@@ -44,20 +70,7 @@ class Prevalence(APIView):
         #for now it will always be localized to country if available.
         localization = "country"
 
-        cases = Case.objects.all() 
-        for field in attributes: 
-            value = attributes[field]
-            args = additional_args.get(field)
-            if type(value) is list: 
-                filter_field = field[:-5]
-                for single_value in value: 
-                    if type(single_value)==str: 
-                        single_value=single_value.strip()
-                    cases = cases.filter_by_attribute(filter_field, single_value, args if args else {})
-            else: 
-                if type(value)==str: 
-                    value = value.strip()
-                cases = cases.filter_by_attribute(field, value, args if args else {})  
+        cases = self.get_cases(attributes, additional_args)
         
         percentage = self.calculate_percentage(cases,attributes.get(localization), localization)
 
@@ -73,7 +86,25 @@ class Prevalence(APIView):
         else: 
             return cases.count()/Case.objects.all().count()
 
+    def get_cases(self, attributes, additional_args={}): 
+        cases = Case.objects.all() 
+        
+        for field in attributes: 
+            value = attributes[field]
+            args = additional_args.get(field)
+            if type(value) is list: 
+                filter_field = field[:-5]
+                for single_value in value: 
+                    if type(single_value)==str: 
+                        single_value=single_value.strip()
+                    cases = cases.filter_by_attribute(filter_field, single_value, args if args else {})
+            else: 
+                if type(value)==str: 
+                    value = value.strip()
+                cases = cases.filter_by_attribute(field, value, args if args else {})  
+        
+        return cases
 
-def updateDB(request): 
-    from .tasks import refreshKaggleDataset 
+def updateDB(request):  
+    from .cron import refreshKaggleDataset 
     refreshKaggleDataset() 
