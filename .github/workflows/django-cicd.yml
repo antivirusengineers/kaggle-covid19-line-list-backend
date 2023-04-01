@@ -42,7 +42,7 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Publish to Docker Hub
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@v5
       with:
         name: patelr3/kaggle-covid19-line-list-api
         username: ${{ secrets.DOCKER_USERNAME }}
